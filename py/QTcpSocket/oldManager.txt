@@ -1,0 +1,56 @@
+
+
+
+from PyQt5 import QtWidgets
+from PyQt5.QtNetwork import *
+from PyQt5.QtCore import *
+from mainform import Ui_MainWindow  # импорт нашего сгенерированного файла
+import sys
+
+
+
+ 
+class mywindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(mywindow, self).__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.agents = dict()
+        self.ui.pushButton.clicked.connect(self.initConnection)
+        self.ui.pushButton_2.clicked.connect(self.sendToAgent)
+        # self.socket = QTcpSocket()
+
+    def initConnection(self):
+        socket = QTcpSocket()
+        ip = "127.0.0.1"
+        port = 55555
+        socket.connectToHost(ip, port)
+        if not socket.waitForConnected(1000):
+            print("Init connection: not connected")
+            return
+        socket.readyRead.connect(lambda x: self.slotReadyRead(socket))
+        socket.disconnected.connect(lambda x: self.slotDisconnect([ip. port]))
+        socket.disconnected.connect(self.deleteLater)
+        self.agents[(ip, port)] = socket
+
+    def slotReadyRead(self, socket):
+        data = socket.readAll().__str__()
+        print(type(data, data))
+        self.ui.textEdit.append(data)
+
+    def slotDisconnect(self, ip_port):
+        self.agents.pop(ip_port)
+
+
+    def sendToAgent(self):
+        text = self.ui.lineEdit.text()
+        agent = self.agents[["127.0.0.1", 55555]]
+        agent.write(text)
+
+
+ 
+app = QtWidgets.QApplication([])
+application = mywindow()
+application.show()
+ 
+sys.exit(app.exec())

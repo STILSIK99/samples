@@ -1,0 +1,39 @@
+
+from PyQt5.QtNetwork import *
+from PyQt5.QtCore import *
+from PyQt5 import sip, QtWidgets
+import sys
+
+
+class Agent(QTcpServer):
+    def __init__(self):
+        super(Agent, self).__init__()
+        if not self.listen(QHostAddress.AnyIPv4, 55555):
+            print("Error")
+        else:
+            print("start")
+        self.nextBlockSize = 0
+        self.socket = QTcpSocket(self)
+        self.socket.readyRead.connect(self.slotReadyRead)
+        self.socket.disconnected.connect(self.socket.deleteLater)
+
+    def incomingConnection(self, socketDescriptor):
+        self.socket.setSocketDescriptor(socketDescriptor)
+
+
+    def slotReadyRead(self):
+        if self.socket.waitForReadyRead(1000):
+            data = self.socket.readAll().__str__()
+            print(type(data), data)
+
+    def sendToManager(self, mes):
+        if not self.socket.waitForConnected(1000):
+            print("Send: not connected")
+            return
+        self.socket.write(mes)
+
+
+app = QtWidgets.QApplication([])
+application = Agent()
+     
+sys.exit(app.exec())

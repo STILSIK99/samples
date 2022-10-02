@@ -1,0 +1,5 @@
+    # self.ui.lineEdit_11.setTabOrder()
+    # list_eds = sorted(self.ui.centralwidget.findChildren(QLineEdit),
+    #        key=lambda x: str.lower(x.objectName()))
+    # for i in range(len(list_eds)):
+    #     list_eds[i].set
